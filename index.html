@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#C9A84C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WC 2026">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<title>World Cup 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --dark: #0A0A0F;
+  --dark2: #111118;
+  --dark3: #1A1A24;
+  --dark4: #22222F;
+  --text: #F0EEE8;
+  --muted: #8A8899;
+  --live: #FF3B3B;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  background: var(--dark);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+}
+
+/* INSTALL BANNER */
+#install-banner {
+  display: none;
+  background: linear-gradient(135deg, #1A1A24, #22222F);
+  border-bottom: 1px solid var(--gold);
+  padding: 10px 16px;
+  align-items: center;
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+#install-banner.show { display: flex; }
+.install-text { flex: 1; font-size: 12px; color: var(--text); line-height: 1.4; }
+.install-text strong { color: var(--gold); }
+.install-btn {
+  background: var(--gold);
+  color: var(--dark);
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+}
+.install-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 2px;
+}
+
+/* NOTIF BANNER */
+#notif-banner {
+  display: none;
+  background: #0F1A12;
+  border-bottom: 1px solid #3D7A5C;
+  padding: 10px 16px;
+  align-items: center;
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+#notif-banner.show { display: flex; }
+.notif-text { flex: 1; font-size: 12px; color: var(--text); line-height: 1.4; }
+.notif-text strong { color: #6DD99A; }
+.notif-btn {
+  background: #3D7A5C;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+}
+
+/* HEADER */
+.header {
+  background: var(--dark);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--dark4);
+}
+.header-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 14px 0 10px;
+}
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.brand { display: flex; align-items: center; gap: 8px; }
+.trophy { font-size: 20px; }
+.brand-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  line-height: 1;
+}
+.brand-sub {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 1px;
+}
+.header-right { display: flex; align-items: center; gap: 6px; }
+.tz-pill {
+  background: var(--dark3);
+  border: 1px solid var(--dark4);
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 10px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tz-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); }
+.bell-btn {
+  background: var(--dark3);
+  border: 1px solid var(--dark4);
+  border-radius: 20px;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+}
+.bell-btn.active { border-color: var(--gold); background: rgba(201,168,76,0.15); }
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--dark4);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+.tab.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--dark);
+  font-weight: 700;
+}
+
+/* MAIN */
+.main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 12px 16px 90px;
+}
+
+/* DATE GROUP */
+.date-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 16px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.date-label::after { content:''; flex:1; height:1px; background:var(--dark4); }
+.date-today {
+  background: var(--gold);
+  color: var(--dark);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* MATCH CARD */
+.match-card {
+  background: var(--dark2);
+  border: 1px solid var(--dark4);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.match-card.is-live { border-color: var(--live); background: #150A0A; }
+.match-card.is-done { opacity: 0.65; }
+
+.match-card .notif-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--dark3);
+  border: 1px solid var(--dark4);
+  border-radius: 8px;
+  padding: 3px 7px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+  z-index: 2;
+}
+.match-card .notif-toggle.on {
+  background: rgba(201,168,76,0.2);
+  border-color: var(--gold);
+}
+
+.match-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-right: 52px;
+}
+.match-meta { display: flex; align-items: center; gap: 6px; }
+.group-badge {
+  background: var(--dark3);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.group-badge.knockout { color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+.venue-text {
+  font-size: 9px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+.match-time { font-size: 11px; font-weight: 600; color: var(--gold-light); }
+.live-badge {
+  background: var(--live);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  padding: 2px 6px;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+/* TEAMS */
+.teams-row { display: flex; align-items: center; gap: 8px; }
+.team { flex:1; display:flex; align-items:center; gap:8px; }
+.team.right { flex-direction:row-reverse; text-align:right; }
+.flag { font-size: 22px; line-height:1; flex-shrink:0; }
+.team-name { font-size: 13px; font-weight: 600; line-height:1.2; flex:1; }
+.team.right .team-name { text-align:right; }
+.vs-block { display:flex; flex-direction:column; align-items:center; flex-shrink:0; min-width:40px; }
+.vs-text { font-family:'Bebas Neue',sans-serif; font-size:13px; color:var(--muted); letter-spacing:1px; }
+.score-block { display:flex; align-items:center; gap:4px; }
+.score-num { font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--text); line-height:1; min-width:16px; text-align:center; }
+.score-sep { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--muted); }
+
+/* GROUPS VIEW */
+.group-card {
+  background: var(--dark2);
+  border: 1px solid var(--dark4);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.group-title {
+  background: var(--dark3);
+  padding: 8px 14px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  border-bottom: 1px solid var(--dark4);
+}
+.group-team {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--dark4);
+  font-size: 13px;
+  font-weight: 500;
+}
+.group-team:last-child { border-bottom: none; }
+.team-rank { width:16px; font-size:10px; color:var(--muted); font-weight:700; }
+
+/* EMPTY */
+.empty { text-align:center; padding:60px 20px; color:var(--muted); font-size:13px; }
+.empty-icon { font-size:40px; margin-bottom:12px; }
+
+/* TOAST */
+#toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--dark3);
+  border: 1px solid var(--gold);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 200;
+  white-space: nowrap;
+  pointer-events: none;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--dark2);
+  border-top: 1px solid var(--dark4);
+  display: flex;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.nav-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+.nav-btn.active { color: var(--gold); }
+.nav-icon { font-size: 20px; line-height:1; }
+.nav-label { font-size: 9px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<!-- INSTALL BANNER -->
+<div id="install-banner">
+  <div class="install-text"><strong>Install as App</strong><br>Add to Home Screen for the full experience</div>
+  <button class="install-btn" onclick="installApp()">Install</button>
+  <button class="install-close" onclick="dismissInstall()">✕</button>
+</div>
+
+<!-- NOTIFICATION BANNER -->
+<div id="notif-banner">
+  <div class="notif-text"><strong>🔔 Get match reminders</strong><br>We'll notify you 30 mins before kick-off</div>
+  <button class="notif-btn" onclick="enableNotifications()">Enable</button>
+</div>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="brand">
+        <span class="trophy">🏆</span>
+        <div>
+          <div class="brand-text">WORLD CUP 2026</div>
+          <span class="brand-sub">USA · Canada · Mexico</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="tz-pill">
+          <span class="tz-dot"></span>
+          <span id="tz-display">Local</span>
+        </div>
+        <div class="bell-btn" id="bell-btn" onclick="toggleAllNotifications()">🔔</div>
+      </div>
+    </div>
+    <div class="tabs" id="stage-tabs">
+      <button class="tab active" onclick="setStage('group')">Group Stage</button>
+      <button class="tab" onclick="setStage('r32')">Round of 32</button>
+      <button class="tab" onclick="setStage('r16')">Round of 16</button>
+      <button class="tab" onclick="setStage('qf')">Quarters</button>
+      <button class="tab" onclick="setStage('sf')">Semis</button>
+      <button class="tab" onclick="setStage('final')">Final</button>
+    </div>
+  </div>
+</div>
+
+<div class="main" id="main-content"></div>
+
+<div id="toast"></div>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-schedule" onclick="switchView('schedule')">
+    <span class="nav-icon">📅</span><span class="nav-label">Schedule</span>
+  </button>
+  <button class="nav-btn" id="nav-today" onclick="switchView('today')">
+    <span class="nav-icon">⚡</span><span class="nav-label">Today</span>
+  </button>
+  <button class="nav-btn" id="nav-groups" onclick="switchView('groups')">
+    <span class="nav-icon">👥</span><span class="nav-label">Groups</span>
+  </button>
+</nav>
+
+<script>
+// ============ DATA ============
+const FLAGS = {
+  'Mexico':'🇲🇽','South Africa':'🇿🇦','South Korea':'🇰🇷','Czechia':'🇨🇿',
+  'Canada':'🇨🇦','Bosnia':'🇧🇦','Qatar':'🇶🇦','Switzerland':'🇨🇭',
+  'Brazil':'🇧🇷','Morocco':'🇲🇦','Haiti':'🇭🇹','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+  'USA':'🇺🇸','Paraguay':'🇵🇾','Australia':'🇦🇺','Turkiye':'🇹🇷',
+  'Germany':'🇩🇪','Curacao':'🇨🇼','Ivory Coast':'🇨🇮','Ecuador':'🇪🇨',
+  'Netherlands':'🇳🇱','Japan':'🇯🇵','Sweden':'🇸🇪','Tunisia':'🇹🇳',
+  'Spain':'🇪🇸','Cape Verde':'🇨🇻','Saudi Arabia':'🇸🇦','Uruguay':'🇺🇾',
+  'Belgium':'🇧🇪','Egypt':'🇪🇬','Iran':'🇮🇷','New Zealand':'🇳🇿',
+  'France':'🇫🇷','Senegal':'🇸🇳','Iraq':'🇮🇶','Norway':'🇳🇴',
+  'Argentina':'🇦🇷','Algeria':'🇩🇿','Austria':'🇦🇹','Jordan':'🇯🇴',
+  'Portugal':'🇵🇹','DR Congo':'🇨🇩','Uzbekistan':'🇺🇿','Colombia':'🇨🇴',
+  'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Croatia':'🇭🇷','Ghana':'🇬🇭','Panama':'🇵🇦',
+  'TBD':'🏳️'
+};
+
+const GROUPS = {
+  'A':['Mexico','South Korea','South Africa','Czechia'],
+  'B':['Canada','Bosnia','Qatar','Switzerland'],
+  'C':['Brazil','Morocco','Haiti','Scotland'],
+  'D':['USA','Paraguay','Australia','Turkiye'],
+  'E':['Germany','Curacao','Ivory Coast','Ecuador'],
+  'F':['Netherlands','Japan','Sweden','Tunisia'],
+  'G':['Belgium','Egypt','Iran','New Zealand'],
+  'H':['Spain','Cape Verde','Saudi Arabia','Uruguay'],
+  'I':['France','Senegal','Iraq','Norway'],
+  'J':['Argentina','Algeria','Austria','Jordan'],
+  'K':['Portugal','DR Congo','Uzbekistan','Colombia'],
+  'L':['England','Croatia','Ghana','Panama']
+};
+
+const MATCHES = [
+  {id:1,stage:'group',group:'A',home:'Mexico',away:'South Africa',venue:'Mexico City',utc:'2026-06-11T19:00:00Z',score:'2-0'},
+  {id:2,stage:'group',group:'A',home:'South Korea',away:'Czechia',venue:'Guadalajara',utc:'2026-06-12T02:00:00Z'},
+  {id:3,stage:'group',group:'B',home:'Canada',away:'Bosnia',venue:'Toronto',utc:'2026-06-12T19:00:00Z'},
+  {id:4,stage:'group',group:'D',home:'USA',away:'Paraguay',venue:'Los Angeles',utc:'2026-06-13T01:00:00Z'},
+  {id:5,stage:'group',group:'B',home:'Qatar',away:'Switzerland',venue:'San Francisco',utc:'2026-06-13T19:00:00Z'},
+  {id:6,stage:'group',group:'C',home:'Brazil',away:'Morocco',venue:'New Jersey',utc:'2026-06-13T22:00:00Z'},
+  {id:7,stage:'group',group:'C',home:'Haiti',away:'Scotland',venue:'Boston',utc:'2026-06-14T01:00:00Z'},
+  {id:8,stage:'group',group:'D',home:'Australia',away:'Turkiye',venue:'Vancouver',utc:'2026-06-14T04:00:00Z'},
+  {id:9,stage:'group',group:'E',home:'Germany',away:'Curacao',venue:'Houston',utc:'2026-06-14T17:00:00Z'},
+  {id:10,stage:'group',group:'F',home:'Netherlands',away:'Japan',venue:'Dallas',utc:'2026-06-14T20:00:00Z'},
+  {id:11,stage:'group',group:'E',home:'Ivory Coast',away:'Ecuador',venue:'Philadelphia',utc:'2026-06-14T23:00:00Z'},
+  {id:12,stage:'group',group:'F',home:'Sweden',away:'Tunisia',venue:'Monterrey',utc:'2026-06-15T02:00:00Z'},
+  {id:13,stage:'group',group:'H',home:'Spain',away:'Cape Verde',venue:'Atlanta',utc:'2026-06-15T16:00:00Z'},
+  {id:14,stage:'group',group:'G',home:'Belgium',away:'Egypt',venue:'Vancouver',utc:'2026-06-15T19:00:00Z'},
+  {id:15,stage:'group',group:'H',home:'Saudi Arabia',away:'Uruguay',venue:'Miami',utc:'2026-06-15T22:00:00Z'},
+  {id:16,stage:'group',group:'G',home:'Iran',away:'New Zealand',venue:'Los Angeles',utc:'2026-06-16T01:00:00Z'},
+  {id:17,stage:'group',group:'I',home:'France',away:'Senegal',venue:'New Jersey',utc:'2026-06-16T19:00:00Z'},
+  {id:18,stage:'group',group:'I',home:'Iraq',away:'Norway',venue:'Boston',utc:'2026-06-16T22:00:00Z'},
+  {id:19,stage:'group',group:'J',home:'Argentina',away:'Algeria',venue:'Kansas City',utc:'2026-06-17T01:00:00Z'},
+  {id:20,stage:'group',group:'J',home:'Austria',away:'Jordan',venue:'San Francisco',utc:'2026-06-17T04:00:00Z'},
+  {id:21,stage:'group',group:'K',home:'Portugal',away:'DR Congo',venue:'Houston',utc:'2026-06-17T17:00:00Z'},
+  {id:22,stage:'group',group:'L',home:'England',away:'Croatia',venue:'Dallas',utc:'2026-06-17T20:00:00Z'},
+  {id:23,stage:'group',group:'L',home:'Ghana',away:'Panama',venue:'Toronto',utc:'2026-06-17T23:00:00Z'},
+  {id:24,stage:'group',group:'K',home:'Uzbekistan',away:'Colombia',venue:'Mexico City',utc:'2026-06-18T02:00:00Z'},
+  {id:25,stage:'group',group:'A',home:'Czechia',away:'South Africa',venue:'Atlanta',utc:'2026-06-18T16:00:00Z'},
+  {id:26,stage:'group',group:'B',home:'Switzerland',away:'Bosnia',venue:'Los Angeles',utc:'2026-06-18T19:00:00Z'},
+  {id:27,stage:'group',group:'B',home:'Canada',away:'Qatar',venue:'Vancouver',utc:'2026-06-18T22:00:00Z'},
+  {id:28,stage:'group',group:'A',home:'Mexico',away:'South Korea',venue:'Guadalajara',utc:'2026-06-19T01:00:00Z'},
+  {id:29,stage:'group',group:'C',home:'Scotland',away:'Morocco',venue:'Boston',utc:'2026-06-19T22:00:00Z'},
+  {id:30,stage:'group',group:'D',home:'USA',away:'Australia',venue:'Seattle',utc:'2026-06-19T19:00:00Z'},
+  {id:31,stage:'group',group:'C',home:'Brazil',away:'Haiti',venue:'Philadelphia',utc:'2026-06-20T00:30:00Z'},
+  {id:32,stage:'group',group:'D',home:'Turkiye',away:'Paraguay',venue:'San Francisco',utc:'2026-06-20T03:00:00Z'},
+  {id:33,stage:'group',group:'F',home:'Netherlands',away:'Sweden',venue:'Houston',utc:'2026-06-20T17:00:00Z'},
+  {id:34,stage:'group',group:'E',home:'Germany',away:'Ivory Coast',venue:'Toronto',utc:'2026-06-20T20:00:00Z'},
+  {id:35,stage:'group',group:'E',home:'Ecuador',away:'Curacao',venue:'Kansas City',utc:'2026-06-21T03:00:00Z'},
+  {id:36,stage:'group',group:'F',home:'Tunisia',away:'Japan',venue:'Monterrey',utc:'2026-06-21T04:00:00Z'},
+  {id:37,stage:'group',group:'H',home:'Spain',away:'Saudi Arabia',venue:'Atlanta',utc:'2026-06-21T16:00:00Z'},
+  {id:38,stage:'group',group:'G',home:'Belgium',away:'Iran',venue:'Los Angeles',utc:'2026-06-21T19:00:00Z'},
+  {id:39,stage:'group',group:'H',home:'Uruguay',away:'Cape Verde',venue:'Miami',utc:'2026-06-21T22:00:00Z'},
+  {id:40,stage:'group',group:'G',home:'New Zealand',away:'Egypt',venue:'Vancouver',utc:'2026-06-22T01:00:00Z'},
+  {id:41,stage:'group',group:'J',home:'Argentina',away:'Austria',venue:'Dallas',utc:'2026-06-22T17:00:00Z'},
+  {id:42,stage:'group',group:'I',home:'France',away:'Iraq',venue:'Philadelphia',utc:'2026-06-22T21:00:00Z'},
+  {id:43,stage:'group',group:'I',home:'Norway',away:'Senegal',venue:'New Jersey',utc:'2026-06-23T00:00:00Z'},
+  {id:44,stage:'group',group:'J',home:'Jordan',away:'Algeria',venue:'San Francisco',utc:'2026-06-23T03:00:00Z'},
+  {id:45,stage:'group',group:'K',home:'Portugal',away:'Uzbekistan',venue:'Houston',utc:'2026-06-23T17:00:00Z'},
+  {id:46,stage:'group',group:'L',home:'England',away:'Ghana',venue:'Boston',utc:'2026-06-23T20:00:00Z'},
+  {id:47,stage:'group',group:'L',home:'Panama',away:'Croatia',venue:'Toronto',utc:'2026-06-23T23:00:00Z'},
+  {id:48,stage:'group',group:'K',home:'Colombia',away:'DR Congo',venue:'Guadalajara',utc:'2026-06-24T02:00:00Z'},
+  {id:49,stage:'group',group:'B',home:'Switzerland',away:'Canada',venue:'Vancouver',utc:'2026-06-24T19:00:00Z'},
+  {id:50,stage:'group',group:'B',home:'Bosnia',away:'Qatar',venue:'Seattle',utc:'2026-06-24T19:00:00Z'},
+  {id:51,stage:'group',group:'C',home:'Scotland',away:'Brazil',venue:'Miami',utc:'2026-06-24T22:00:00Z'},
+  {id:52,stage:'group',group:'C',home:'Morocco',away:'Haiti',venue:'Atlanta',utc:'2026-06-24T22:00:00Z'},
+  {id:53,stage:'group',group:'A',home:'Czechia',away:'Mexico',venue:'Mexico City',utc:'2026-06-25T01:00:00Z'},
+  {id:54,stage:'group',group:'A',home:'South Africa',away:'South Korea',venue:'Monterrey',utc:'2026-06-25T01:00:00Z'},
+  {id:55,stage:'group',group:'E',home:'Ecuador',away:'Germany',venue:'New Jersey',utc:'2026-06-25T20:00:00Z'},
+  {id:56,stage:'group',group:'E',home:'Curacao',away:'Ivory Coast',venue:'Philadelphia',utc:'2026-06-25T20:00:00Z'},
+  {id:57,stage:'group',group:'F',home:'Japan',away:'Sweden',venue:'Dallas',utc:'2026-06-25T23:00:00Z'},
+  {id:58,stage:'group',group:'F',home:'Tunisia',away:'Netherlands',venue:'Kansas City',utc:'2026-06-25T23:00:00Z'},
+  {id:59,stage:'group',group:'D',home:'Turkiye',away:'USA',venue:'Los Angeles',utc:'2026-06-26T02:00:00Z'},
+  {id:60,stage:'group',group:'D',home:'Paraguay',away:'Australia',venue:'San Francisco',utc:'2026-06-26T02:00:00Z'},
+  {id:61,stage:'group',group:'I',home:'Norway',away:'France',venue:'Boston',utc:'2026-06-26T19:00:00Z'},
+  {id:62,stage:'group',group:'I',home:'Senegal',away:'Iraq',venue:'Toronto',utc:'2026-06-26T19:00:00Z'},
+  {id:63,stage:'group',group:'H',home:'Cape Verde',away:'Saudi Arabia',venue:'Houston',utc:'2026-06-27T00:00:00Z'},
+  {id:64,stage:'group',group:'H',home:'Uruguay',away:'Spain',venue:'Guadalajara',utc:'2026-06-27T00:00:00Z'},
+  {id:65,stage:'group',group:'G',home:'Egypt',away:'Iran',venue:'Seattle',utc:'2026-06-27T03:00:00Z'},
+  {id:66,stage:'group',group:'G',home:'New Zealand',away:'Belgium',venue:'Vancouver',utc:'2026-06-27T03:00:00Z'},
+  {id:67,stage:'group',group:'L',home:'Panama',away:'England',venue:'New Jersey',utc:'2026-06-27T21:00:00Z'},
+  {id:68,stage:'group',group:'L',home:'Croatia',away:'Ghana',venue:'Philadelphia',utc:'2026-06-27T21:00:00Z'},
+  {id:69,stage:'group',group:'K',home:'Colombia',away:'Portugal',venue:'Miami',utc:'2026-06-27T23:30:00Z'},
+  {id:70,stage:'group',group:'K',home:'DR Congo',away:'Uzbekistan',venue:'Atlanta',utc:'2026-06-27T23:30:00Z'},
+  {id:71,stage:'group',group:'J',home:'Algeria',away:'Austria',venue:'Kansas City',utc:'2026-06-28T02:00:00Z'},
+  {id:72,stage:'group',group:'J',home:'Jordan',away:'Argentina',venue:'Dallas',utc:'2026-06-28T02:00:00Z'},
+  {id:73,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Los Angeles',utc:'2026-06-28T19:00:00Z'},
+  {id:74,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Houston',utc:'2026-06-29T19:00:00Z'},
+  {id:75,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Boston',utc:'2026-06-29T20:30:00Z'},
+  {id:76,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Monterrey',utc:'2026-06-30T01:00:00Z'},
+  {id:77,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Dallas',utc:'2026-06-30T17:00:00Z'},
+  {id:78,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'New Jersey',utc:'2026-06-30T21:00:00Z'},
+  {id:79,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Mexico City',utc:'2026-07-01T01:00:00Z'},
+  {id:80,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Atlanta',utc:'2026-07-01T16:00:00Z'},
+  {id:81,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Seattle',utc:'2026-07-01T20:00:00Z'},
+  {id:82,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'San Francisco',utc:'2026-07-01T20:00:00Z'},
+  {id:83,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Los Angeles',utc:'2026-07-02T19:00:00Z'},
+  {id:84,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Toronto',utc:'2026-07-02T23:00:00Z'},
+  {id:85,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Vancouver',utc:'2026-07-03T03:00:00Z'},
+  {id:86,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Dallas',utc:'2026-07-03T18:00:00Z'},
+  {id:87,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Miami',utc:'2026-07-03T22:00:00Z'},
+  {id:88,stage:'r32',group:'R32',home:'TBD',away:'TBD',venue:'Kansas City',utc:'2026-07-04T01:30:00Z'},
+  {id:89,stage:'r16',group:'R16',home:'TBD',away:'TBD',venue:'Houston',utc:'2026-07-04T17:00:00Z'},
+  {id:90,stage:'r16',group:'R16',home:'TBD',away:'TBD',venue:'Philadelphia',utc:'2026-07-04T21:00:00Z'},
+  {id:91,stage:'r16',group:'R16',home:'TBD',away:'TBD',venue:'New Jersey',utc:'2026-07-05T20:00:00Z'},
+  {id:92,stage:'r16',group:'R16',home:'TBD',away:'TBD',venue:'Mexico City',utc:'2026-07-06T00:00:00Z'},
+  {id:93,stage:'r16',group:'R16',home:'TBD',away:'TBD',venue:'Dallas',utc:'2026-07-06T19:00:00Z'},
+  {id:94,stage:'r16',group:'R16',home:'TBD',away:'TBD',venue:'Seattle',utc:'2026-07-07T00:00:00Z'},
+  {id:95,stage:'r16',group:'R16',home:'TBD',away:'TBD',venue:'Atlanta',utc:'2026-07-07T16:00:00Z'},
+  {id:96,stage:'r16',group:'R16',home:'TBD',away:'TBD',venue:'Vancouver',utc:'2026-07-07T20:00:00Z'},
+  {id:97,stage:'qf',group:'QF',home:'TBD',away:'TBD',venue:'Boston',utc:'2026-07-09T20:00:00Z'},
+  {id:98,stage:'qf',group:'QF',home:'TBD',away:'TBD',venue:'Los Angeles',utc:'2026-07-10T19:00:00Z'},
+  {id:99,stage:'qf',group:'QF',home:'TBD',away:'TBD',venue:'Miami',utc:'2026-07-11T20:00:00Z'},
+  {id:100,stage:'qf',group:'QF',home:'TBD',away:'TBD',venue:'Kansas City',utc:'2026-07-12T01:00:00Z'},
+  {id:101,stage:'sf',group:'SF',home:'TBD',away:'TBD',venue:'Dallas',utc:'2026-07-14T19:00:00Z'},
+  {id:102,stage:'sf',group:'SF',home:'TBD',away:'TBD',venue:'Atlanta',utc:'2026-07-15T19:00:00Z'},
+  {id:103,stage:'final',group:'3rd',home:'TBD',away:'TBD',venue:'Miami',utc:'2026-07-18T21:00:00Z'},
+  {id:104,stage:'final',group:'Final',home:'TBD',away:'TBD',venue:'New Jersey',utc:'2026-07-19T19:00:00Z'},
+];
+
+// ============ STATE ============
+let currentStage = 'group';
+let currentView = 'schedule';
+let notifEnabled = false;
+let notifPerMatch = JSON.parse(localStorage.getItem('wc_notifs') || '{}');
+let deferredPrompt = null;
+let swReg = null;
+let notifTimers = {};
+
+// ============ INIT ============
+window.addEventListener('DOMContentLoaded', () => {
+  updateTZDisplay();
+  registerSW();
+  checkNotifStatus();
+  render();
+  checkInstallPrompt();
+  // Reschedule any saved notifications
+  rescheduleNotifications();
+});
+
+// ============ SERVICE WORKER ============
+async function registerSW() {
+  if ('serviceWorker' in navigator) {
+    try {
+      swReg = await navigator.serviceWorker.register('./sw.js');
+    } catch(e) { console.log('SW failed:', e); }
+  }
+}
+
+// ============ INSTALL ============
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').classList.add('show');
+});
+
+function checkInstallPrompt() {
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    document.getElementById('install-banner').classList.remove('show');
+  }
+}
+
+async function installApp() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const result = await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('install-banner').classList.remove('show');
+  if (result.outcome === 'accepted') showToast('✅ App installed!');
+}
+
+function dismissInstall() {
+  document.getElementById('install-banner').classList.remove('show');
+}
+
+// ============ NOTIFICATIONS ============
+function checkNotifStatus() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') {
+    notifEnabled = true;
+    document.getElementById('bell-btn').classList.add('active');
+    document.getElementById('notif-banner').classList.remove('show');
+  } else if (Notification.permission === 'default') {
+    document.getElementById('notif-banner').classList.add('show');
+  }
+}
+
+async function enableNotifications() {
+  if (!('Notification' in window)) { showToast('❌ Notifications not supported'); return; }
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    notifEnabled = true;
+    document.getElementById('bell-btn').classList.add('active');
+    document.getElementById('notif-banner').classList.remove('show');
+    showToast('🔔 Notifications enabled!');
+    rescheduleNotifications();
+    render();
+  } else {
+    showToast('❌ Permission denied');
+  }
+}
+
+async function toggleAllNotifications() {
+  if (!notifEnabled) {
+    await enableNotifications();
+    return;
+  }
+  // Enable all upcoming matches
+  const now = new Date();
+  let count = 0;
+  MATCHES.forEach(m => {
+    const kickoff = new Date(m.utc);
+    const notifTime = new Date(kickoff - 30 * 60000);
+    if (notifTime > now && !notifPerMatch[m.id]) {
+      notifPerMatch[m.id] = true;
+      count++;
+    }
+  });
+  saveNotifPrefs();
+  rescheduleNotifications();
+  showToast(`🔔 ${count} reminders scheduled!`);
+  render();
+}
+
+function toggleMatchNotif(id) {
+  if (!notifEnabled) {
+    enableNotifications();
+    return;
+  }
+  notifPerMatch[id] = !notifPerMatch[id];
+  saveNotifPrefs();
+  if (notifPerMatch[id]) {
+    scheduleNotif(MATCHES.find(m => m.id === id));
+    showToast('🔔 Reminder set!');
+  } else {
+    cancelNotif(id);
+    showToast('🔕 Reminder removed');
+  }
+  render();
+}
+
+function saveNotifPrefs() {
+  localStorage.setItem('wc_notifs', JSON.stringify(notifPerMatch));
+}
+
+function scheduleNotif(match) {
+  if (!match) return;
+  const kickoff = new Date(match.utc);
+  const notifTime = new Date(kickoff - 30 * 60000);
+  const now = new Date();
+  const delay = notifTime - now;
+  if (delay <= 0) return; // Already past
+
+  cancelNotif(match.id);
+  notifTimers[match.id] = setTimeout(() => {
+    const homeFlag = FLAGS[match.home] || '';
+    const awayFlag = FLAGS[match.away] || '';
+    const title = `⚽ Kick-off in 30 mins!`;
+    const body = `${homeFlag} ${match.home} vs ${match.away} ${awayFlag}\n📍 ${match.venue}`;
+    if (swReg) {
+      swReg.showNotification(title, {
+        body,
+        icon: './icons/icon-192.png',
+        badge: './icons/icon-96.png',
+        vibrate: [200, 100, 200],
+        tag: `match-${match.id}`,
+        requireInteraction: false
+      });
+    } else if (Notification.permission === 'granted') {
+      new Notification(title, { body, icon: './icons/icon-192.png' });
+    }
+  }, delay);
+}
+
+function cancelNotif(id) {
+  if (notifTimers[id]) {
+    clearTimeout(notifTimers[id]);
+    delete notifTimers[id];
+  }
+}
+
+function rescheduleNotifications() {
+  if (!notifEnabled) return;
+  MATCHES.forEach(m => {
+    if (notifPerMatch[m.id]) scheduleNotif(m);
+  });
+}
+
+// ============ UI HELPERS ============
+function updateTZDisplay() {
+  const now = new Date();
+  const tzName = now.toLocaleDateString('en-US',{timeZoneName:'short'}).split(', ')[1] || 'Local';
+  document.getElementById('tz-display').textContent = tzName;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function setStage(stage) {
+  currentStage = stage;
+  document.querySelectorAll('#stage-tabs .tab').forEach((t,i) => {
+    t.classList.toggle('active', ['group','r32','r16','qf','sf','final'][i] === stage);
+  });
+  render();
+}
+
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-'+view).classList.add('active');
+  document.getElementById('stage-tabs').style.display = view==='schedule' ? 'flex' : 'none';
+  render();
+}
+
+// ============ TIME ============
+function formatTime(utc) {
+  return new Date(utc).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+}
+
+function isToday(utc) {
+  const d = new Date(utc), n = new Date();
+  return d.getDate()===n.getDate() && d.getMonth()===n.getMonth() && d.getFullYear()===n.getFullYear();
+}
+
+function isLive(utc) {
+  const diff = (new Date() - new Date(utc)) / 60000;
+  return diff >= 0 && diff < 105;
+}
+
+function isDone(utc) {
+  return (new Date() - new Date(utc)) / 60000 > 105;
+}
+
+function groupLabel(g) {
+  const m = {'R32':'Round of 32','R16':'Round of 16','QF':'Quarterfinal','SF':'Semifinal','Final':'Final','3rd':'3rd Place'};
+  return m[g] ? m[g] : 'Group '+g;
+}
+
+// ============ RENDER ============
+function matchCard(m) {
+  const live = isLive(m.utc);
+  const done = isDone(m.utc);
+  const knockout = ['r32','r16','qf','sf','final'].includes(m.stage);
+  const hasNotif = notifPerMatch[m.id];
+  const canNotif = notifEnabled && !done && !live;
+
+  const statusBadge = live
+    ? `<span class="live-badge">LIVE</span>`
+    : `<span class="match-time">${formatTime(m.utc)}</span>`;
+
+  const scorePart = done && m.score
+    ? `<div class="score-block"><span class="score-num">${m.score.split('-')[0]}</span><span class="score-sep">-</span><span class="score-num">${m.score.split('-')[1]}</span></div>`
+    : `<div class="vs-text">VS</div>`;
+
+  const notifBtn = canNotif
+    ? `<button class="notif-toggle ${hasNotif?'on':''}" onclick="toggleMatchNotif(${m.id})">${hasNotif?'🔔':'🔕'}</button>`
+    : '';
+
+  return `<div class="match-card ${live?'is-live':''} ${done&&!live?'is-done':''}">
+    ${notifBtn}
+    <div class="match-top">
+      <div class="match-meta">
+        <span class="group-badge ${knockout?'knockout':''}">${groupLabel(m.group)}</span>
+        <span class="venue-text">📍 ${m.venue}</span>
+      </div>
+      ${statusBadge}
+    </div>
+    <div class="teams-row">
+      <div class="team">
+        <span class="flag">${FLAGS[m.home]||'🏳️'}</span>
+        <span class="team-name">${m.home}</span>
+      </div>
+      <div class="vs-block">${scorePart}</div>
+      <div class="team right">
+        <span class="team-name">${m.away}</span>
+        <span class="flag">${FLAGS[m.away]||'🏳️'}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function render() {
+  const main = document.getElementById('main-content');
+
+  if (currentView === 'groups') {
+    main.innerHTML = Object.entries(GROUPS).map(([g, teams]) =>
+      `<div class="group-card">
+        <div class="group-title">⚽ GROUP ${g}</div>
+        ${teams.map((t,i) => `<div class="group-team"><span class="team-rank">${i+1}</span><span>${FLAGS[t]||'🏳️'}</span><span>${t}</span></div>`).join('')}
+      </div>`
+    ).join('');
+    return;
+  }
+
+  if (currentView === 'today') {
+    const todayMatches = MATCHES.filter(m => isToday(m.utc));
+    main.innerHTML = todayMatches.length
+      ? todayMatches.map(matchCard).join('')
+      : `<div class="empty"><div class="empty-icon">⚽</div>No matches today.<br>Check the schedule!</div>`;
+    return;
+  }
+
+  // Schedule
+  const filtered = MATCHES.filter(m => m.stage === currentStage);
+  const byDate = {};
+  filtered.forEach(m => {
+    const key = new Date(m.utc).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    if (!byDate[key]) byDate[key] = {utc:m.utc, matches:[]};
+    byDate[key].matches.push(m);
+  });
+
+  let html = Object.entries(byDate).map(([date, data]) => {
+    const today = isToday(data.utc);
+    return `<div class="date-group">
+      <div class="date-label">${today?'<span class="date-today">TODAY</span>':''}${date}</div>
+      ${data.matches.map(matchCard).join('')}
+    </div>`;
+  }).join('');
+
+  main.innerHTML = html || `<div class="empty"><div class="empty-icon">🏟️</div>Matchups TBD after group stage</div>`;
+}
+</script>
+</body>
+</html>
